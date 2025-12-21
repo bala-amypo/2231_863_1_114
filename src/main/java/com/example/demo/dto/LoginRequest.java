@@ -1,8 +1,12 @@
 package com.yourpackage.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data // Use Lombok to generate getters/setters automatically
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
     private String username;
     private String password;
