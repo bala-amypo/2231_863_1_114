@@ -1,16 +1,16 @@
-# Server Configuration
-server.port=8080
+package com.example.demo.config;
 
-# Database Configuration (Example: MySQL)
-spring.datasource.url=jdbc:mysql://localhost:3306/your_db_name
-spring.datasource.username=root
-spring.datasource.password=yourpassword
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
-# JWT Settings (Custom properties used in your JwtUtils)
-app.jwt.secret=YourSuperSecretKeyThatIsVeryLongAndSecure123456
-app.jwt.expiration-ms=86400000
+@Configuration
+public class AppConfig {
 
-# Swagger UI Path
-springdoc.swagger-ui.path=/swagger-ui.html
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+    
+    // You can add other Bean configurations here
+}mvn
