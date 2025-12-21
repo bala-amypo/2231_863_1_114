@@ -13,4 +13,4 @@ public class AppConfig {
     }
     
     // You can add other Bean configurations here
-}mvn
+}
