@@ -1,45 +1,54 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "queues")
-public class Queue {
+public class QueuePosition {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String queueName;
+    @OneToOne
+    @JoinColumn(name = "token_id")
+    private Token token;
 
-    private String description;
+    private Integer position;
 
-    // Constructors
-    public Queue() {}
+    private LocalDateTime updatedAt;
 
-    public Queue(String queueName, String description) {
-        this.queueName = queueName;
-        this.description = description;
-    }
+    public QueuePosition() {}
 
-    // Getters & Setters
     public Long getId() {
         return id;
     }
-
-    public String getQueueName() {
-        return queueName;
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setQueueName(String queueName) {
-        this.queueName = queueName;
+    public Token getToken() {
+        return token;
+    }
+    
+    public void setToken(Token token) {
+        this.token = token;
     }
 
-    public String getDescription() {
-        return description;
+    public Integer getPosition() {
+        return position;
+    }
+    
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

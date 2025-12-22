@@ -1,42 +1,78 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "roles")
-public class Role {
+@Table(
+    uniqueConstraints = @UniqueConstraint(columnNames = "tokenNumber")
+)
+public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String roleName;
+    @Column(unique = true)
+    private String tokenNumber;
 
-    @OneToMany(mappedBy = "role")
-    private List<User> users;
+    @ManyToOne
+    @JoinColumn(name = "service_counter_id")
+    private ServiceCounter serviceCounter;
 
-    // Constructors
-    public Role() {}
+    private String status; // WAITING / SERVING / COMPLETED / CANCELLED
 
-    public Role(String roleName) {
-        this.roleName = roleName;
-    }
+    private LocalDateTime issuedAt;
 
-    // Getters & Setters
+    private LocalDateTime completedAt;
+
+    public Token() {}
+
     public Long getId() {
         return id;
     }
-
-    public String getRoleName() {
-        return roleName;
+    
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
+    public String getTokenNumber() {
+        return tokenNumber;
+    }
+    
+    public void setTokenNumber(String tokenNumber) {
+        this.tokenNumber = tokenNumber;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public ServiceCounter getServiceCounter() {
+        return serviceCounter;
+    }
+    
+    public void setServiceCounter(ServiceCounter serviceCounter) {
+        this.serviceCounter = serviceCounter;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+    
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getIssuedAt() {
+        return issuedAt;
+    }
+    
+    public void setIssuedAt(LocalDateTime issuedAt) {
+        this.issuedAt = issuedAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+    
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 }
