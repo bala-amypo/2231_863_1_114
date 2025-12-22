@@ -37,8 +37,3 @@ public class TokenLogController {
         return logRepository.findAll();
     }
 }
-UserRepository.java          ✅
-ServiceCounterRepository.java
-TokenRepository.java
-QueuePositionRepository.java
-TokenLogRepository.java
