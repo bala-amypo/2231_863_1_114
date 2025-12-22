@@ -11,9 +11,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Queue Management API")
-                        .version("1.0")
-                        .description("Digital Queue Management System"));
+                .servers(List.of(
+                    new server(),
+                ))
     }
 }
