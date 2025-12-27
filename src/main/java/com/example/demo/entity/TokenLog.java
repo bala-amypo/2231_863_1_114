@@ -1,61 +1,56 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-public class User {
+public class TokenLog {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String name;
+    @ManyToOne
+    private Token token;
 
-    @Column(unique = true)
-    private String email;
+    private String logMessage;
+    private LocalDateTime loggedAt;
 
-    private String password;
-
-    private String role = "STAFF";
+    @PrePersist
+    public void onCreate() {
+        loggedAt = LocalDateTime.now();
+    }
 
     // getters & setters
     public Long getId() {
         return id;
     }
-
+ 
     public void setId(Long id) {
         this.id = id;
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
+ 
+    public Token getToken() {
+        return token;
     }
  
-    public void setPassword(String password) {
-        this.password = password;
+    public void setToken(Token token) {
+        this.token = token;
     }
  
-    public String getRole() {
-        return role;
+    public String getLogMessage() {
+        return logMessage;
     }
  
-    public void setRole(String role) {
-        this.role = role;
+    public void setLogMessage(String logMessage) {
+        this.logMessage = logMessage;
+    }
+ 
+    public LocalDateTime getLoggedAt() {
+        return loggedAt;
+    }
+ 
+    public void setLoggedAt(LocalDateTime loggedAt) {
+        this.loggedAt = loggedAt;
     }
 }
