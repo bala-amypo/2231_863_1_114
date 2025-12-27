@@ -20,14 +20,14 @@ public class AlertController {
     }
 
     @PostMapping("/counter/{counterId}")
-    @Operation(summary = "Issue new alert token")
-    public ResponseEntity<BreachAlertResponse> issueToken(@PathVariable Long counterId) {
+    @Operation(summary = "Issue new breach alert")
+    public ResponseEntity<BreachAlertResponse> issueAlert(@PathVariable Long counterId) {
         BreachAlert alert = breachAlertService.issueAlert(counterId);
         return ResponseEntity.ok(mapToResponse(alert));
     }
 
     @PutMapping("/{id}/status")
-    @Operation(summary = "Update alert status")
+    @Operation(summary = "Update breach alert status")
     public ResponseEntity<BreachAlertResponse> updateStatus(
             @PathVariable Long id,
             @RequestParam String status) {
@@ -37,7 +37,7 @@ public class AlertController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get alert details")
+    @Operation(summary = "Get breach alert details")
     public ResponseEntity<BreachAlertResponse> getAlert(@PathVariable Long id) {
         BreachAlert alert = breachAlertService.getAlert(id);
         return ResponseEntity.ok(mapToResponse(alert));
@@ -45,6 +45,7 @@ public class AlertController {
 
     private BreachAlertResponse mapToResponse(BreachAlert alert) {
         BreachAlertResponse response = new BreachAlertResponse();
+
         response.setId(alert.getId());
         response.setTokenNumber(alert.getTokenNumber());
         response.setStatus(alert.getStatus());
@@ -55,12 +56,12 @@ public class AlertController {
         if (alert.getColdRoom() != null) {
             response.setColdRoomName(alert.getColdRoom().getName());
         }
+
         if (alert.getSensor() != null) {
             response.setSensorIdentifier(alert.getSensor().getIdentifier());
         }
-        if (alert.getQueuePosition() != null) {
-            response.setQueuePosition(alert.getQueuePosition().getPosition());
-        }
+
+        // 🚫 QUEUE POSITION REMOVED — NO CALL HERE
 
         return response;
     }
