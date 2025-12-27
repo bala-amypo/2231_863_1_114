@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.ServiceCounter;
-import com.example.demo.repository.ServiceCounterRepository;
+import com.example.demo.service.ServiceCounterService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,19 +10,19 @@ import java.util.List;
 @RequestMapping("/counters")
 public class ServiceCounterController {
 
-    private final ServiceCounterRepository repository;
+    private final ServiceCounterService service;
 
-    public ServiceCounterController(ServiceCounterRepository repository) {
-        this.repository = repository;
+    public ServiceCounterController(ServiceCounterService service) {
+        this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ServiceCounter addCounter(@RequestBody ServiceCounter counter) {
-        return repository.save(counter);
+        return service.addCounter(counter);
     }
 
-    @GetMapping
-    public List<ServiceCounter> getAllCounters() {
-        return repository.findAll();
+    @GetMapping("/active")
+    public List<ServiceCounter> getActiveCounters() {
+        return service.getActiveCounters();
     }
 }

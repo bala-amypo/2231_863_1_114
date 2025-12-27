@@ -1,44 +1,28 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.QueuePosition;
-import com.example.demo.entity.Token;
-import com.example.demo.repository.QueuePositionRepository;
-import com.example.demo.repository.TokenRepository;
+import com.example.demo.service.QueueService;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/queue")
 public class QueueController {
 
-    private final QueuePositionRepository queueRepository;
-    private final TokenRepository tokenRepository;
+    private final QueueService queueService;
 
-    public QueueController(QueuePositionRepository queueRepository,
-                           TokenRepository tokenRepository) {
-        this.queueRepository = queueRepository;
-        this.tokenRepository = tokenRepository;
+    public QueueController(QueueService queueService) {
+        this.queueService = queueService;
     }
 
-    @PostMapping("/{tokenId}/{position}")
-    public QueuePosition addToQueue(@PathVariable Long tokenId,
-                                    @PathVariable Integer position) {
-
-        Token token = tokenRepository.findById(tokenId).orElse(null);
-        if (token == null) return null;
-
-        QueuePosition qp = new QueuePosition();
-        qp.setToken(token);
-        qp.setPosition(position);
-        qp.setUpdatedAt(LocalDateTime.now());
-
-        return queueRepository.save(qp);
+    @PutMapping("/position/{tokenId}/{newPosition}")
+    public QueuePosition updatePosition(
+            @PathVariable Long tokenId,
+            @PathVariable Integer newPosition) {
+        return queueService.updateQueuePosition(tokenId, newPosition);
     }
 
-    @GetMapping
-    public List<QueuePosition> getQueue() {
-        return queueRepository.findAll();
+    @GetMapping("/position/{tokenId}")
+    public QueuePosition getPosition(@PathVariable Long tokenId) {
+        return queueService.getPosition(tokenId);
     }
 }

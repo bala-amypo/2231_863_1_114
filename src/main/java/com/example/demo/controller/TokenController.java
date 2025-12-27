@@ -1,48 +1,33 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.Token;
-import com.example.demo.entity.ServiceCounter;
-import com.example.demo.repository.TokenRepository;
-import com.example.demo.repository.ServiceCounterRepository;
+import com.example.demo.service.TokenService;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/tokens")
 public class TokenController {
 
-    private final TokenRepository tokenRepository;
-    private final ServiceCounterRepository counterRepository;
+    private final TokenService tokenService;
 
-    public TokenController(TokenRepository tokenRepository,
-                           ServiceCounterRepository counterRepository) {
-        this.tokenRepository = tokenRepository;
-        this.counterRepository = counterRepository;
+    public TokenController(TokenService tokenService) {
+        this.tokenService = tokenService;
     }
 
-    @PostMapping("/{counterId}")
-    public Token generateToken(@PathVariable Long counterId) {
-
-        ServiceCounter counter =
-                counterRepository.findById(counterId).orElse(null);
-
-        if (counter == null || !Boolean.TRUE.equals(counter.getIsActive())) {
-            return null;
-        }
-
-        Token token = new Token();
-        token.setTokenNumber("T" + System.currentTimeMillis());
-        token.setServiceCounter(counter);
-        token.setStatus("WAITING");
-        token.setIssuedAt(LocalDateTime.now());
-
-        return tokenRepository.save(token);
+    @PostMapping("/issue/{counterId}")
+    public Token issueToken(@PathVariable Long counterId) {
+        return tokenService.issueToken(counterId);
     }
 
-    @GetMapping
-    public List<Token> getAllTokens() {
-        return tokenRepository.findAll();
+    @PutMapping("/status/{tokenId}")
+    public Token updateStatus(
+            @PathVariable Long tokenId,
+            @RequestParam String status) {
+        return tokenService.updateStatus(tokenId, status);
+    }
+
+    @GetMapping("/{tokenId}")
+    public Token getToken(@PathVariable Long tokenId) {
+        return tokenService.getToken(tokenId);
     }
 }
