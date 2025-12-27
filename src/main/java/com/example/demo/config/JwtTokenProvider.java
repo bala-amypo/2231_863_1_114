@@ -12,9 +12,35 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    private final long expirationMillis = 86400000; // 1 day
+    private SecretKey secretKey;
+    private long expirationMillis;
 
+    // ✅ REQUIRED BY TESTS
+    public JwtTokenProvider() {
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+        this.expirationMillis = 86400000; // 1 day
+    }
+
+    // ✅ REQUIRED BY TESTS
+    public JwtTokenProvider(String secret, int expirationMillis) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.expirationMillis = expirationMillis;
+    }
+
+    // ✅ TEST-COMPATIBLE METHOD
+    public String generateToken(String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationMillis);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(secretKey)
+                .compact();
+    }
+
+    // ✅ YOUR ORIGINAL METHOD (kept)
     public String generateToken(Long userId, String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMillis);
@@ -27,6 +53,11 @@ public class JwtTokenProvider {
                 .setExpiration(expiryDate)
                 .signWith(secretKey)
                 .compact();
+    }
+
+    // ✅ REQUIRED BY TESTS
+    public String getUsernameFromToken(String token) {
+        return getClaims(token).getSubject();
     }
 
     public boolean validateToken(String token) {
