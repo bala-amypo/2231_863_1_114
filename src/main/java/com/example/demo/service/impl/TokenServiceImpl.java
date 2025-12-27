@@ -146,21 +146,21 @@ public class TokenServiceImpl implements TokenService {
         token.setStatus("WAITING");
         token.setIssuedAt(LocalDateTime.now());
 
-        // 🔑 Sequential token number
+        // Generate sequential token number
         long count = tokenRepository.count() + 1;
         token.setTokenNumber("T" + count);
 
         token = tokenRepository.save(token);
 
-        // 🔑 Queue position from repository
-        int lastPosition = queuePositionRepository.findMaxPosition().orElse(0);
+        // Get last queue position safely
+        int lastPosition = queuePositionRepository.findMaxPosition();
 
-        QueuePosition qp = new QueuePosition();
-        qp.setToken(token);
-        qp.setPosition(lastPosition + 1);
-        qp.setUpdatedAt(LocalDateTime.now());
+        QueuePosition queuePosition = new QueuePosition();
+        queuePosition.setToken(token);
+        queuePosition.setPosition(lastPosition + 1);
+        queuePosition.setUpdatedAt(LocalDateTime.now());
 
-        queuePositionRepository.save(qp);
+        queuePositionRepository.save(queuePosition);
 
         TokenLog log = new TokenLog(token, "Token issued", LocalDateTime.now());
         tokenLogRepository.save(log);
@@ -195,3 +195,4 @@ public class TokenServiceImpl implements TokenService {
                 .orElseThrow(() -> new ResourceNotFoundException("Token not found"));
     }
 }
+
