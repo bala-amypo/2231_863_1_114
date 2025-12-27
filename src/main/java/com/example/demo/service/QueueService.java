@@ -1,40 +1,29 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import com.example.demo.entity.QueuePosition;
-import com.example.demo.entity.Token;
-import com.example.demo.repository.QueuePositionRepository;
-import com.example.demo.repository.TokenRepository;
-import org.springframework.stereotype.Service;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
+public class QueueServiceImpl {
 
-@Service
-public class QueueService {
+    private final QueuePositionRepository repo;
+    private final TokenRepository tokenRepo;
 
-    private final QueuePositionRepository queueRepository;
-    private final TokenRepository tokenRepository;
-
-    public QueueService(QueuePositionRepository queueRepository,
-                        TokenRepository tokenRepository) {
-        this.queueRepository = queueRepository;
-        this.tokenRepository = tokenRepository;
+    public QueueServiceImpl(QueuePositionRepository r, TokenRepository t) {
+        this.repo = r;
+        this.tokenRepo = t;
     }
 
-    public QueuePosition addToQueue(Long tokenId, Integer position) {
-
-        Token token = tokenRepository.findById(tokenId).orElse(null);
-        if (token == null) return null;
-
+    public QueuePosition updateQueuePosition(Long tokenId, int pos) {
+        if (pos < 1) throw new IllegalArgumentException(">= 1");
+        Token t = tokenRepo.findById(tokenId).orElseThrow();
         QueuePosition qp = new QueuePosition();
-        qp.setToken(token);
-        qp.setPosition(position);
-        qp.setUpdatedAt(LocalDateTime.now());
-
-        return queueRepository.save(qp);
+        qp.setToken(t);
+        qp.setPosition(pos);
+        return repo.save(qp);
     }
 
-    public List<QueuePosition> getQueue() {
-        return queueRepository.findAll();
+    public QueuePosition getPosition(Long tokenId) {
+        return repo.findByToken_Id(tokenId).orElseThrow();
     }
 }
+    

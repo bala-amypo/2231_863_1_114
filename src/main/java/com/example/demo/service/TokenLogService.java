@@ -1,35 +1,28 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
-import com.example.demo.entity.Token;
-import com.example.demo.entity.TokenLog;
-import com.example.demo.repository.TokenLogRepository;
-import com.example.demo.repository.TokenRepository;
-import org.springframework.stereotype.Service;
-
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import java.util.List;
 
-@Service
-public class TokenLogService {
+public class TokenLogServiceImpl {
 
-    private final TokenLogRepository logRepository;
-    private final TokenRepository tokenRepository;
+    private final TokenLogRepository repo;
+    private final TokenRepository tokenRepo;
 
-    public TokenLogService(TokenLogRepository logRepository,
-                           TokenRepository tokenRepository) {
-        this.logRepository = logRepository;
-        this.tokenRepository = tokenRepository;
+    public TokenLogServiceImpl(TokenLogRepository r, TokenRepository t) {
+        this.repo = r;
+        this.tokenRepo = t;
     }
 
-    public TokenLog addLog(Long tokenId, TokenLog log) {
-
-        Token token = tokenRepository.findById(tokenId).orElse(null);
-        if (token == null) return null;
-
-        log.setToken(token);
-        return logRepository.save(log);
+    public TokenLog addLog(Long tokenId, String msg) {
+        Token t = tokenRepo.findById(tokenId).orElseThrow();
+        TokenLog log = new TokenLog();
+        log.setToken(t);
+        log.setMessage(msg);
+        return repo.save(log);
     }
 
-    public List<TokenLog> getAllLogs() {
-        return logRepository.findAll();
+    public List<TokenLog> getLogs(Long tokenId) {
+        return repo.findByToken_IdOrderByLoggedAtAsc(tokenId);
     }
 }

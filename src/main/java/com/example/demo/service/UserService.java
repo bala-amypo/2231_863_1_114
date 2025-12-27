@@ -1,29 +1,25 @@
-package com.example.demo.service;
+package com.example.demo.service.impl;
 
 import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
+public class UserServiceImpl {
 
-@Service
-public class UserService {
+    private final UserRepository repo;
 
-    private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserRepository repo) {
+        this.repo = repo;
     }
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
+    public User register(User u) {
+        if (repo.findByEmail(u.getEmail()).isPresent())
+            throw new IllegalArgumentException("Email already exists");
+
+        u.setPassword("ENC_" + u.getPassword());
+        return repo.save(u);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public User findByEmail(String email) {
+        return repo.findByEmail(email).orElseThrow();
     }
 }
