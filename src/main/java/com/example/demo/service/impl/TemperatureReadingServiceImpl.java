@@ -1,50 +1,53 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.BreachAlert;
 import com.example.demo.entity.TemperatureReading;
-import com.example.demo.repository.BreachAlertRepository;
+import com.example.demo.entity.SensorDevice;
+import com.example.demo.entity.ColdRoom;
+import com.example.demo.repository.TemperatureReadingRepository;
+import com.example.demo.repository.SensorRepository;
+import com.example.demo.repository.ColdRoomRepository;
 import com.example.demo.service.TemperatureReadingService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TemperatureReadingServiceImpl implements TemperatureReadingService {
 
-    private final BreachAlertRepository breachAlertRepository;
+    private final TemperatureReadingRepository temperatureReadingRepository;
+    private final SensorRepository sensorRepository;
+    private final ColdRoomRepository coldRoomRepository;
 
-    public TemperatureReadingServiceImpl(BreachAlertRepository breachAlertRepository) {
-        this.breachAlertRepository = breachAlertRepository;
+    public TemperatureReadingServiceImpl(TemperatureReadingRepository temperatureReadingRepository,
+                                         SensorRepository sensorRepository,
+                                         ColdRoomRepository coldRoomRepository) {
+        this.temperatureReadingRepository = temperatureReadingRepository;
+        this.sensorRepository = sensorRepository;
+        this.coldRoomRepository = coldRoomRepository;
     }
 
     @Override
-    public BreachAlert createAlert(TemperatureReading reading) {
-        BreachAlert alert = new BreachAlert();
-        alert.setReading(reading);
-        alert.setIssuedAt(LocalDateTime.now());
-        alert.setStatus("OPEN");
-        alert.setTokenNumber("TKN-" + System.currentTimeMillis());
-        alert.setBreachType("TEMPERATURE_BREACH"); // set according to your logic
-        alert.setColdRoom(reading.getColdRoom());
-        alert.setSensor(reading.getSensor());
+    public TemperatureReading recordReading(String sensorIdentifier, Double readingValue) {
+        SensorDevice sensor = sensorRepository.findByIdentifier(sensorIdentifier)
+                .orElseThrow(() -> new RuntimeException("Sensor not found"));
 
-        return breachAlertRepository.save(alert);
+        ColdRoom coldRoom = sensor.getColdRoom(); // assuming sensor is linked to ColdRoom
+
+        TemperatureReading reading = new TemperatureReading();
+        reading.setSensor(sensor);
+        reading.setColdRoom(coldRoom);
+        reading.setValue(readingValue);
+        reading.setRecordedAt(LocalDateTime.now());
+
+        return temperatureReadingRepository.save(reading);
     }
 
     @Override
-    public BreachAlert updateAlertStatus(Long alertId, String status) {
-        BreachAlert alert = breachAlertRepository.findById(alertId)
-                .orElseThrow(() -> new RuntimeException("Alert not found"));
-        alert.setStatus(status);
-        if ("RESOLVED".equalsIgnoreCase(status)) {
-            alert.setResolvedAt(LocalDateTime.now());
-        }
-        return breachAlertRepository.save(alert);
-    }
+    public List<TemperatureReading> getReadingsByColdRoom(Long coldRoomId) {
+        ColdRoom coldRoom = coldRoomRepository.findById(coldRoomId)
+                .orElseThrow(() -> new RuntimeException("ColdRoom not found"));
 
-    @Override
-    public BreachAlert getAlert(Long alertId) {
-        return breachAlertRepository.findById(alertId)
-                .orElseThrow(() -> new RuntimeException("Alert not found"));
+        return temperatureReadingRepository.findByColdRoom(coldRoom);
     }
 }
