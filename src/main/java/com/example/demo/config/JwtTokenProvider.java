@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -13,16 +12,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey secretKey;
-    private final long expirationMillis;
-
-    public JwtTokenProvider(
-            @Value("${jwt.secret:mySecretKey}") String secretKeyString,
-            @Value("${jwt.expiration:86400000}") long expirationMillis) {
-
-        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
-        this.expirationMillis = expirationMillis;
-    }
+    private final SecretKey secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private final long expirationMillis = 86400000; // 1 day
 
     public String generateToken(Long userId, String email, String role) {
         Date now = new Date();
@@ -34,16 +25,16 @@ public class JwtTokenProvider {
                 .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(secretKey, SignatureAlgorithm.HS512)
+                .signWith(secretKey)
                 .compact();
     }
 
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token);
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
