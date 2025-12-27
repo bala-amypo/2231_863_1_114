@@ -12,24 +12,22 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
     private final SecretKey secretKey;
     private final long expirationMillis;
-    
-    public JwtTokenProvider(@Value("${jwt.secret:mySecretKey}") String secretKeyString,
-                           @Value("${jwt.expiration:86400000}") long expirationMillis) {
+
+    public JwtTokenProvider(
+            @Value("${jwt.secret:mySecretKey}") String secretKeyString,
+            @Value("${jwt.expiration:86400000}") long expirationMillis) {
+
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
         this.expirationMillis = expirationMillis;
     }
-    
-    public JwtTokenProvider(String secretKeyString, long expirationMillis) {
-        this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());
-        this.expirationMillis = expirationMillis;
-    }
-    
+
     public String generateToken(Long userId, String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expirationMillis);
-        
+
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .claim("email", email)
@@ -39,16 +37,19 @@ public class JwtTokenProvider {
                 .signWith(secretKey, SignatureAlgorithm.HS512)
                 .compact();
     }
-    
+
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-    
+
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(secretKey)
