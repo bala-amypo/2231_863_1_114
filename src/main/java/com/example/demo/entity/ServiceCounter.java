@@ -1,5 +1,3 @@
-package com.example.demo.entity;
-
 public class ServiceCounter {
 
     private Long id;
