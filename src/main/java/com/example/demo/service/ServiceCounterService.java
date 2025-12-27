@@ -15,15 +15,11 @@ public class ServiceCounterService {
         this.repository = repository;
     }
 
-    public ServiceCounter save(ServiceCounter counter) {
+    public ServiceCounter addCounter(ServiceCounter counter) {
         return repository.save(counter);
     }
 
-    public List<ServiceCounter> getAllCounters() {
-        return repository.findAll();
-    }
-
-    public ServiceCounter getById(Long id) {
-        return repository.findById(id).orElse(null);
+    public List<ServiceCounter> getActiveCounters() {
+        return repository.findByIsActiveTrue();
     }
 }

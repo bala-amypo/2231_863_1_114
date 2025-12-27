@@ -14,22 +14,26 @@ public class TokenLogService {
     private final TokenLogRepository logRepository;
     private final TokenRepository tokenRepository;
 
-    public TokenLogService(TokenLogRepository logRepository,
-                           TokenRepository tokenRepository) {
+    public TokenLogService(
+            TokenLogRepository logRepository,
+            TokenRepository tokenRepository) {
+
         this.logRepository = logRepository;
         this.tokenRepository = tokenRepository;
     }
 
-    public TokenLog addLog(Long tokenId, TokenLog log) {
+    public TokenLog addLog(Long tokenId, String message) {
+        Token token = tokenRepository.findById(tokenId)
+                .orElseThrow(() -> new RuntimeException("Token not found"));
 
-        Token token = tokenRepository.findById(tokenId).orElse(null);
-        if (token == null) return null;
-
+        TokenLog log = new TokenLog();
         log.setToken(token);
+        log.setLogMessage(message);
+
         return logRepository.save(log);
     }
 
-    public List<TokenLog> getAllLogs() {
-        return logRepository.findAll();
+    public List<TokenLog> getLogs(Long tokenId) {
+        return logRepository.findByToken_IdOrderByLoggedAtAsc(tokenId);
     }
 }
