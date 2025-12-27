@@ -1,12 +1,17 @@
 package com.example.demo.entity;
 
-import java.time.LocalDateTime;
-
 public class TokenLog {
+
     private Long id;
     private String message;
-    private LocalDateTime loggedAt = LocalDateTime.now();
     private Token token;
 
-    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+
+    public Token getToken() { return token; }
+    public void setToken(Token token) { this.token = token; }
 }
