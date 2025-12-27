@@ -1,12 +1,13 @@
 package com.example.demo.repository;
 
+import com.example.demo.entity.ColdRoom;
 import com.example.demo.entity.TemperatureReading;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public interface TemperatureReadingRepository extends JpaRepository<TemperatureReading, Long> {
-    List<TemperatureReading> findByColdRoomIdOrderByRecordedAtDesc(Long coldRoomId);
+public interface TemperatureReadingRepository
+        extends JpaRepository<TemperatureReading, Long> {
+
+    List<TemperatureReading> findByColdRoom(ColdRoom coldRoom);
 }

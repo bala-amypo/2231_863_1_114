@@ -1,11 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.TemperatureReading;
-import com.example.demo.entity.SensorDevice;
-import com.example.demo.entity.ColdRoom;
-import com.example.demo.repository.TemperatureReadingRepository;
-import com.example.demo.repository.SensorRepository;
-import com.example.demo.repository.ColdRoomRepository;
+import com.example.demo.entity.*;
+import com.example.demo.repository.*;
 import com.example.demo.service.TemperatureReadingService;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +15,11 @@ public class TemperatureReadingServiceImpl implements TemperatureReadingService 
     private final SensorRepository sensorRepository;
     private final ColdRoomRepository coldRoomRepository;
 
-    public TemperatureReadingServiceImpl(TemperatureReadingRepository temperatureReadingRepository,
-                                         SensorRepository sensorRepository,
-                                         ColdRoomRepository coldRoomRepository) {
+    public TemperatureReadingServiceImpl(
+            TemperatureReadingRepository temperatureReadingRepository,
+            SensorRepository sensorRepository,
+            ColdRoomRepository coldRoomRepository) {
+
         this.temperatureReadingRepository = temperatureReadingRepository;
         this.sensorRepository = sensorRepository;
         this.coldRoomRepository = coldRoomRepository;
@@ -29,15 +27,16 @@ public class TemperatureReadingServiceImpl implements TemperatureReadingService 
 
     @Override
     public TemperatureReading recordReading(String sensorIdentifier, Double readingValue) {
+
         SensorDevice sensor = sensorRepository.findByIdentifier(sensorIdentifier)
                 .orElseThrow(() -> new RuntimeException("Sensor not found"));
 
-        ColdRoom coldRoom = sensor.getColdRoom(); // assuming sensor is linked to ColdRoom
+        ColdRoom coldRoom = sensor.getColdRoom();
 
         TemperatureReading reading = new TemperatureReading();
         reading.setSensor(sensor);
         reading.setColdRoom(coldRoom);
-        reading.setValue(readingValue);
+        reading.setReadingValue(readingValue); // ✅ CORRECT
         reading.setRecordedAt(LocalDateTime.now());
 
         return temperatureReadingRepository.save(reading);
@@ -45,8 +44,9 @@ public class TemperatureReadingServiceImpl implements TemperatureReadingService 
 
     @Override
     public List<TemperatureReading> getReadingsByColdRoom(Long coldRoomId) {
+
         ColdRoom coldRoom = coldRoomRepository.findById(coldRoomId)
-                .orElseThrow(() -> new RuntimeException("ColdRoom not found"));
+                .orElseThrow(() -> new RuntimeException("Cold room not found"));
 
         return temperatureReadingRepository.findByColdRoom(coldRoom);
     }
